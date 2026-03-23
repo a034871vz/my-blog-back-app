@@ -5,7 +5,7 @@ services:
     image: postgres:15
     container_name: my_postgres
     environment:
-      POSTGRES_DB: usersdb
+      POSTGRES_DB: blogdb
       POSTGRES_USER: sa
       POSTGRES_PASSWORD: sa
     ports:
@@ -23,7 +23,7 @@ services:
       - ./target/my-blog-back.war:/usr/local/tomcat/webapps/ROOT.war
     environment:
       POSTGRES_HOST: postgres
-      POSTGRES_DB: usersdb
+      POSTGRES_DB: blogdb
       POSTGRES_USER: sa
       POSTGRES_PASSWORD: sa
     depends_on:
