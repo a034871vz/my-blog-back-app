@@ -1,19 +1,37 @@
-create table if not exists posts
+CREATE TABLE IF NOT EXISTS posts
 (
-    id            bigserial primary key,
-    title         varchar(256) not null,
-    text          text not null,
-    tags          jsonb,
-    likes_count   integer not null default 0,
-    comments_count integer not null default 0,
-    image         bytea
+    id             BIGSERIAL PRIMARY KEY,
+    title          VARCHAR(256) NOT NULL,
+    text           TEXT         NOT NULL,
+    tags           JSONB,
+    likes_count    INTEGER      NOT NULL DEFAULT 0,
+    comments_count INTEGER      NOT NULL DEFAULT 0,
+    image          BYTEA
     );
 
+INSERT INTO posts (title, text, tags, likes_count, comments_count)
+SELECT 'Название поста 1', 'Текст поста в формате Markdown...', '["tag_1", "tag_2"]'::jsonb, 5, 2
+    WHERE NOT EXISTS (SELECT 1 FROM posts LIMIT 1);
 
-insert into posts (title, text, tags, likes_count, comments_count)
-select 'Название поста 1', 'Текст поста в формате Markdown...', '["tag_1", "tag_2"]'::jsonb, 5, 1
-    where not exists (select 1 from posts limit 1);
+INSERT INTO posts (title, text, tags, likes_count, comments_count)
+SELECT 'Второй пост', 'Текст второго поста...', '["tag_3"]'::jsonb, 2, 1
+    WHERE NOT EXISTS (SELECT 1 FROM posts WHERE id = 2);
 
-insert into posts (title, text, tags, likes_count, comments_count)
-select 'Второй пост', 'Текст второго поста...', '["tag_3"]'::jsonb, 2, 0
-    where not exists (select 1 from posts where id = 2);
+CREATE TABLE IF NOT EXISTS comments
+(
+    id      BIGSERIAL PRIMARY KEY,
+    text    TEXT    NOT NULL,
+    post_id BIGINT  NOT NULL REFERENCES posts (id) ON DELETE CASCADE
+    );
+
+INSERT INTO comments (text, post_id)
+SELECT 'Комментарий к посту 1', 1
+    WHERE NOT EXISTS (SELECT 1 FROM comments WHERE post_id = 1 LIMIT 1);
+
+INSERT INTO comments (text, post_id)
+SELECT 'Ещё один комментарий к посту 1', 1
+    WHERE NOT EXISTS (SELECT 1 FROM comments WHERE post_id = 1 AND text = 'Ещё один комментарий к посту 1');
+
+INSERT INTO comments (text, post_id)
+SELECT 'Комментарий ко второму посту', 2
+    WHERE NOT EXISTS (SELECT 1 FROM comments WHERE post_id = 2 LIMIT 1);

@@ -55,7 +55,7 @@ public class PostController {
         postService.deletePost(id);
     }
 
-    @GetMapping("/{id}/likes")
+    @PostMapping("/{id}/likes")
     public Integer incrementLikes(@PathVariable("id") Long id) {
         return postService.incrementLikes(id);
     }
