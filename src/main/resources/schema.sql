@@ -5,7 +5,8 @@ create table if not exists posts
     text          text not null,
     tags          jsonb,
     likes_count   integer not null default 0,
-    comments_count integer not null default 0
+    comments_count integer not null default 0,
+    image         bytea
     );
 
 

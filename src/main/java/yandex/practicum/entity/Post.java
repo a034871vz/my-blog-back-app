@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import yandex.practicum.dto.PostRequest;
 import yandex.practicum.service.FilesService;
 
 import java.util.List;
@@ -49,4 +51,13 @@ public class Post {
 
     @Column(name = "comments_count", nullable = false)
     private Integer commentsCount = 0;
+
+    @Column(columnDefinition = "bytea")
+    private byte[] image;
+
+    public Post(PostRequest request) {
+        this.title = request.title();
+        this.text = request.text();
+        this.tags = request.tags();
+    }
 }
