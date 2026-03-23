@@ -1,5 +1,0 @@
-database:
-  url: jdbc:postgresql://localhost:5432/usersdb
-  username: sa
-  password: sa
-  driver: org.postgresql.Driver

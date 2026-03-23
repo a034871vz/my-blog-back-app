@@ -14,5 +14,21 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
 
+  tomcat:
+    image: tomcat:10.1-jre21
+    container_name: my_tomcat
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./target/my-blog-back.war:/usr/local/tomcat/webapps/ROOT.war
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: usersdb
+      POSTGRES_USER: sa
+      POSTGRES_PASSWORD: sa
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
 volumes:
   postgres_data:
