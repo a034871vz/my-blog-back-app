@@ -1,6 +1,5 @@
 package yandex.practicum.dto;
 
-import lombok.NoArgsConstructor;
 import yandex.practicum.entity.Post;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public record PostResponse(
                 post.getId(),
                 post.getTitle(),
                 truncatedText,
-                post.getTags(),
+                post.getTagsAsList(),
                 post.getLikesCount(),
                 post.getCommentsCount()
         );

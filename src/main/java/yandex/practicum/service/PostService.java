@@ -46,7 +46,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostResponse getPostById(Long id) {
-        return postRepository.findById(id).map(PostResponse::from).orElse(null);
+        return postRepository.findById(id).map(PostResponse::from).orElseThrow(() -> new PostNotFoundException(id));
     }
 
     @Transactional

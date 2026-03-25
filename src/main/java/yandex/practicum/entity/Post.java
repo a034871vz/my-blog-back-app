@@ -1,6 +1,8 @@
 package yandex.practicum.entity;
 
-import com.vladmihalcea.hibernate.type.json.JsonType;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 import yandex.practicum.dto.PostRequest;
 
 import java.util.List;
@@ -30,9 +31,8 @@ public class Post {
     @Column(nullable = false)
     private String text;
 
-    @Type(JsonType.class)
-    @Column(columnDefinition = "jsonb")
-    private List<String> tags;
+    @Column
+    private String tags;
 
     @Column(name = "likes_count", nullable = false)
     private Integer likesCount = 0;
@@ -46,6 +46,26 @@ public class Post {
     public Post(PostRequest request) {
         this.title = request.title();
         this.text = request.text();
-        this.tags = request.tags();
+        setTagsFromList(request.tags());
+    }
+
+    public List<String> getTagsAsList() {
+        if (tags == null || tags.isEmpty()) {
+            return List.of();
+        }
+        try {
+            return new ObjectMapper().readValue(tags, new TypeReference<>() {
+            });
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Ошибка десериализации тегов", e);
+        }
+    }
+
+    public void setTagsFromList(List<String> tagList) {
+        try {
+            this.tags = new ObjectMapper().writeValueAsString(tagList);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Ошибка сериализации тегов", e);
+        }
     }
 }
