@@ -12,6 +12,8 @@ import yandex.practicum.dto.PostRequest;
 import yandex.practicum.dto.PostResponse;
 import yandex.practicum.dto.PostsPageResponse;
 import yandex.practicum.entity.Post;
+import yandex.practicum.exception.ImageNotFoundException;
+import yandex.practicum.exception.PostNotFoundException;
 import yandex.practicum.repository.PostRepository;
 
 import java.io.IOException;
@@ -55,10 +57,10 @@ public class PostService {
 
     @Transactional
     public PostResponse updatePost(Long id, PostRequest request) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Пост не найден"));
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
         post.setTitle(request.title());
         post.setText(request.text());
-        post.setTags(request.tags());
+        post.setTagsFromList(request.tags());
         Post updated = postRepository.save(post);
         return PostResponse.from(updated);
     }
@@ -72,25 +74,25 @@ public class PostService {
     public int incrementLikes(Long id) {
         int updated = postRepository.incrementLikes(id);
         if (updated == 0) {
-            throw new RuntimeException("Пост не найден");
+            throw new PostNotFoundException(id);
         }
 
         return postRepository.findById(id).map(Post::getLikesCount)
-                .orElseThrow(() -> new RuntimeException("Пост не найден"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     @Transactional
     public void updateImage(Long id, MultipartFile file) throws IOException {
-        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Пост не найден"));
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
         post.setImage(file.getBytes());
         postRepository.save(post);
     }
 
     @Transactional
     public byte[] getImage(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Пост не найден"));
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
         if (post.getImage() == null) {
-            throw new RuntimeException("Изображение не найдено");
+            throw new ImageNotFoundException(id);
         }
         return post.getImage();
     }

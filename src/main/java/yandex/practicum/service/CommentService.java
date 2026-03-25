@@ -7,6 +7,8 @@ import yandex.practicum.dto.CommentRequest;
 import yandex.practicum.dto.CommentResponse;
 import yandex.practicum.entity.Comment;
 import yandex.practicum.entity.Post;
+import yandex.practicum.exception.CommentNotFoundException;
+import yandex.practicum.exception.PostNotFoundException;
 import yandex.practicum.repository.CommentRepository;
 import yandex.practicum.repository.PostRepository;
 
@@ -31,13 +33,13 @@ public class CommentService {
     public CommentResponse getComment(Long postId, Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .filter(c -> c.getPost().getId().equals(postId))
-                .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
         return CommentResponse.from(comment);
     }
 
     @Transactional
     public CommentResponse createComment(Long postId, CommentRequest request) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Пост не найден"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
         post.setCommentsCount(post.getCommentsCount() + 1);
         postRepository.save(post);
         Comment saved = commentRepository.save(new Comment(request, post));
@@ -48,7 +50,7 @@ public class CommentService {
     public CommentResponse updateComment(Long postId, Long commentId, CommentRequest request) {
         Comment comment = commentRepository.findById(commentId)
                 .filter(c -> c.getPost().getId().equals(postId))
-                .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
         comment.setText(request.text());
         Comment updated = commentRepository.save(comment);
         return CommentResponse.from(updated);
@@ -58,7 +60,7 @@ public class CommentService {
     public void deleteComment(Long postId, Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .filter(c -> c.getPost().getId().equals(postId))
-                .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
         Post post = comment.getPost();
         post.setCommentsCount(post.getCommentsCount() - 1);
         postRepository.save(post);
