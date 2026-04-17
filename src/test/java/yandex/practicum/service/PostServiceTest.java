@@ -15,6 +15,7 @@ import yandex.practicum.dto.PostResponse;
 import yandex.practicum.dto.PostRequest;
 import yandex.practicum.entity.Post;
 import yandex.practicum.repository.PostRepository;
+import yandex.practicum.exception.PostNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -81,12 +82,11 @@ class PostServiceTest {
     }
 
     @Test
-    void getPostById_shouldReturnEmptyWhenNotExists() {
+    void getPostById_shouldThrowWhenNotExists() {
         Long id = 999L;
         Mockito.when(postRepository.findById(id)).thenReturn(Optional.empty());
 
-        PostResponse result = postService.getPostById(id);
-        Assertions.assertNull(result);
+        Assertions.assertThrows(PostNotFoundException.class, () -> postService.getPostById(id));
     }
 
     @Test

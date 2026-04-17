@@ -4,17 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-import yandex.practicum.configuration.TestJpaConfig;
-import yandex.practicum.configuration.WebConfiguration;
+import yandex.practicum.MyBlogBackAppBootApplication;
 import yandex.practicum.dto.PostRequest;
 import yandex.practicum.entity.Post;
 import yandex.practicum.repository.PostRepository;
@@ -32,26 +29,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringJUnitConfig(classes = {TestJpaConfig.class, WebConfiguration.class})
-@WebAppConfiguration
+@SpringBootTest(classes = MyBlogBackAppBootApplication.class)
+@AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
 class PostControllerIntegrationTest {
 
     @Autowired
-    private WebApplicationContext wac;
+    private MockMvc mockMvc;
 
     @Autowired
     private PostRepository postRepository;
 
-
-    private MockMvc mockMvc;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
         postRepository.deleteAll();
     }
 

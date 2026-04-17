@@ -3,16 +3,15 @@
 ## Технологии
 
 - Java 21
-- Spring Framework 6.2.1
-- Spring Data JPA 3.4.1
-- Hibernate ORM 6.6
+- Spring Boot 3.4.1
+- Spring Data JPA
+- Hibernate
 - PostgreSQL 15
-- Maven
+- Gradle
 - Docker & Docker Compose
-- Tomcat 10.1
 - Lombok
-- Jackson (JSON)
-- Hibernate Types (для JSONB)
+- Jackson
+- Hibernate Types (JSONB)
 
 ## Функциональность
 
@@ -25,5 +24,5 @@
 
 ## Локальный запуск
 
-- mvn clean package
+- ./gradlew bootJar
 - docker-compose up -d
