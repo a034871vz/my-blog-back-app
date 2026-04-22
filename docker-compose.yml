@@ -13,21 +13,25 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sa -d blogdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  tomcat:
-    image: tomcat:10.1-jre21
-    container_name: my_tomcat
+  app:
+    build: .
+    container_name: my_springboot_app
     ports:
       - "8080:8080"
-    volumes:
-      - ./target/my-blog-back.war:/usr/local/tomcat/webapps/ROOT.war
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_DB: blogdb
       POSTGRES_USER: sa
       POSTGRES_PASSWORD: sa
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:

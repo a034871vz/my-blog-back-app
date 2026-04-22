@@ -1,17 +1,16 @@
+package yandex.practicum.controller;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-import yandex.practicum.configuration.TestJpaConfig;
-import yandex.practicum.configuration.WebConfiguration;
+import yandex.practicum.MyBlogBackAppBootApplication;
 import yandex.practicum.dto.CommentRequest;
 import yandex.practicum.entity.Comment;
 import yandex.practicum.entity.Post;
@@ -19,21 +18,18 @@ import yandex.practicum.repository.CommentRepository;
 import yandex.practicum.repository.PostRepository;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringJUnitConfig(classes = {TestJpaConfig.class, WebConfiguration.class})
-@WebAppConfiguration
+@SpringBootTest(classes = MyBlogBackAppBootApplication.class)
+@AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
 class CommentControllerIntegrationTest {
 
     @Autowired
-    private WebApplicationContext wac;
+    private MockMvc mockMvc;
 
     @Autowired
     private PostRepository postRepository;
@@ -41,13 +37,11 @@ class CommentControllerIntegrationTest {
     @Autowired
     private CommentRepository commentRepository;
 
-    private MockMvc mockMvc;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
         commentRepository.deleteAll();
         postRepository.deleteAll();
     }
